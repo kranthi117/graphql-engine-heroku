@@ -1,10 +1,14 @@
+FROM caddy:2.8.4 AS caddy
+
 FROM hasura/graphql-engine:v2.17.0
 
-# Enable the console
-ENV HASURA_GRAPHQL_ENABLE_CONSOLE=true
+COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY start.sh /start.sh
 
-# Enable debugging mode. It should be disabled in production.
-ENV HASURA_GRAPHQL_DEV_MODE=true
+ENV HASURA_GRAPHQL_ENABLE_CONSOLE=false
+
+ENV HASURA_GRAPHQL_DEV_MODE=false
 
 # Heroku only allows to install extensions in the heroku_ext schema
 ENV HASURA_GRAPHQL_METADATA_DATABASE_EXTENSIONS_SCHEMA=public
@@ -13,6 +17,4 @@ ENV HASURA_GRAPHQL_METADATA_DATABASE_EXTENSIONS_SCHEMA=public
 # https://devcenter.heroku.com/articles/heroku-postgres-plans#hobby-tier
 ENV HASURA_GRAPHQL_PG_CONNECTIONS=15
 
-CMD HASURA_GRAPHQL_METADATA_DATABASE_URL=$DATABASE_URL graphql-engine \
-    serve \
-    --server-port $PORT
+CMD ["/bin/bash", "/start.sh"]

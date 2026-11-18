@@ -1,0 +1,20 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+# Cloudflare adds X-Origin-Auth through a Transform Rule on datapipelines.reportgarden.com,
+# so a request without it bypassed Cloudflare (e.g. via the herokuapp.com URL).
+:{$PORT} {
+	@from_cloudflare header X-Origin-Auth {$ORIGIN_AUTH_SECRET}
+
+	handle @from_cloudflare {
+		request_header -X-Origin-Auth
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	handle {
+		respond "Forbidden" 403
+	}
+}
