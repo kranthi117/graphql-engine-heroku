@@ -6,7 +6,7 @@ COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY start.sh /start.sh
 
-ENV HASURA_GRAPHQL_ENABLE_CONSOLE=false
+ENV HASURA_GRAPHQL_ENABLE_CONSOLE=true
 
 ENV HASURA_GRAPHQL_DEV_MODE=false
 
